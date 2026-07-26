@@ -1,13 +1,13 @@
 // @ts-check
 import { defineConfig, devices } from '@playwright/test';
 
-/**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
-// import dotenv from 'dotenv';
-// import path from 'path';
-// dotenv.config({ path: path.resolve(__dirname, '.env') });
+// Load local credentials when a .env file is present. Node 20.12+ provides
+// this natively, so no additional dependency is needed.
+try {
+  process.loadEnvFile('.env');
+} catch (error) {
+  if (error.code !== 'ENOENT') throw error;
+}
 
 /**
  * @see https://playwright.dev/docs/test-configuration
@@ -78,4 +78,3 @@ export default defineConfig({
   //   reuseExistingServer: !process.env.CI,
   // },
 });
-
