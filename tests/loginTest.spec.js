@@ -11,12 +11,25 @@ test('successful login', async ({ page }) => {
     );
   }
 
-  const loginpage = new LoginPage(page);
-  await loginpage.goto();
-  await loginpage.login(username, password);
+  const loginPage = new LoginPage(page);
+  const inventoryPage = new InventoryPage(page);
+  
+  await loginPage.goto();
+  await loginPage.login(username, password);
 
   // A successful Sauce Demo login redirects the user to the inventory page.
-  const inventoryPage = new InventoryPage(page);
-  await expect(page).toHaveURL(inventoryPage.url);
-  await expect(inventoryPage.title).toHaveText('Products');
+  await inventoryPage.confirmLoaded();
+});
+
+test('unsuccessful login displays an error message', async ({ page }) => {
+  
+  const loginPage = new LoginPage(page);
+
+  await loginPage.goto();
+  await loginPage.login('standard_user', 'incorrect_password');
+
+  await expect(loginPage.errorMessage).toHaveText(
+    'Epic sadface: Username and password do not match any user in this service'
+  );
+  await expect(page).toHaveURL(loginPage.url);
 });
